@@ -16,7 +16,7 @@ public class ContractCreateInput
 
     public string? Modifiedby { get; set; }
 
-    public DateTime StartDate { get; set; }
+    public SubscriptionType RealtedSubscriptionType { get; set; }
 
-    public SubscriptionType SubscriptionType { get; set; }
+    public DateTime StartDate { get; set; }
 }

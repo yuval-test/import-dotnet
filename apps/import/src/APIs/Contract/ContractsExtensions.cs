@@ -16,8 +16,8 @@ public static class ContractsExtensions
             Id = model.Id,
             Modified = model.Modified,
             Modifiedby = model.Modifiedby,
+            RealtedSubscriptionType = model.RealtedSubscriptionTypeId,
             StartDate = model.StartDate,
-            SubscriptionType = model.SubscriptionTypeId,
         };
     }
 
@@ -46,13 +46,13 @@ public static class ContractsExtensions
         {
             contract.Createdby = updateDto.Createdby;
         }
+        if (updateDto.RealtedSubscriptionType != null)
+        {
+            contract.RealtedSubscriptionTypeId = updateDto.RealtedSubscriptionType.Value;
+        }
         if (updateDto.StartDate != null)
         {
             contract.StartDate = updateDto.StartDate.Value;
-        }
-        if (updateDto.SubscriptionType != null)
-        {
-            contract.SubscriptionTypeId = updateDto.SubscriptionType.Value;
         }
 
         return contract;

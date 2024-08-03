@@ -16,7 +16,7 @@ public class Contract
 
     public string? Modifiedby { get; set; }
 
-    public DateTime StartDate { get; set; }
+    public int RealtedSubscriptionType { get; set; }
 
-    public int SubscriptionType { get; set; }
+    public DateTime StartDate { get; set; }
 }

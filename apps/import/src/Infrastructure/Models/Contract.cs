@@ -28,11 +28,11 @@ public class ContractDbModel
     [StringLength(256)]
     public string? Modifiedby { get; set; }
 
+    public int RealtedSubscriptionTypeId { get; set; }
+
+    [ForeignKey(nameof(RealtedSubscriptionTypeId))]
+    public SubscriptionTypeDbModel RealtedSubscriptionType { get; set; } = null;
+
     [Required()]
     public DateTime StartDate { get; set; }
-
-    public int SubscriptionTypeId { get; set; }
-
-    [ForeignKey(nameof(SubscriptionTypeId))]
-    public SubscriptionTypeDbModel SubscriptionType { get; set; } = null;
 }

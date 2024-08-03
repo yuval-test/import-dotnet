@@ -108,14 +108,14 @@ public abstract class ContractsControllerBase : ControllerBase
     }
 
     /// <summary>
-    /// Get a Subscription Type record for Contract
+    /// Get a Realted Subscription Type record for Contract
     /// </summary>
     [HttpGet("{Id}/subscriptionTypes")]
-    public async Task<ActionResult<List<SubscriptionType>>> GetSubscriptionType(
+    public async Task<ActionResult<List<SubscriptionType>>> GetRealtedSubscriptionType(
         [FromRoute()] ContractWhereUniqueInput uniqueId
     )
     {
-        var subscriptionType = await _service.GetSubscriptionType(uniqueId);
+        var subscriptionType = await _service.GetRealtedSubscriptionType(uniqueId);
         return Ok(subscriptionType);
     }
 }

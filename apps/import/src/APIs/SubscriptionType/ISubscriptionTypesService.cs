@@ -73,4 +73,36 @@ public interface ISubscriptionTypesService
         SubscriptionTypeWhereUniqueInput uniqueId,
         ContractWhereUniqueInput[] contractsId
     );
+
+    /// <summary>
+    /// Connect multiple Other Contracts records to Subscription Type
+    /// </summary>
+    public Task ConnectOtherContracts(
+        SubscriptionTypeWhereUniqueInput uniqueId,
+        ContractWhereUniqueInput[] contractsId
+    );
+
+    /// <summary>
+    /// Disconnect multiple Other Contracts records from Subscription Type
+    /// </summary>
+    public Task DisconnectOtherContracts(
+        SubscriptionTypeWhereUniqueInput uniqueId,
+        ContractWhereUniqueInput[] contractsId
+    );
+
+    /// <summary>
+    /// Find multiple Other Contracts records for Subscription Type
+    /// </summary>
+    public Task<List<Contract>> FindOtherContracts(
+        SubscriptionTypeWhereUniqueInput uniqueId,
+        ContractFindManyArgs ContractFindManyArgs
+    );
+
+    /// <summary>
+    /// Update multiple Other Contracts records for Subscription Type
+    /// </summary>
+    public Task UpdateOtherContracts(
+        SubscriptionTypeWhereUniqueInput uniqueId,
+        ContractWhereUniqueInput[] contractsId
+    );
 }

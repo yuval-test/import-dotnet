@@ -15,4 +15,6 @@ public class SubscriptionTypeDbModel
     [Key()]
     [Required()]
     public int Id { get; set; }
+
+    public List<ContractDbModel>? OtherContracts { get; set; } = new List<ContractDbModel>();
 }

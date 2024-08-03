@@ -196,4 +196,86 @@ public abstract class SubscriptionTypesControllerBase : ControllerBase
 
         return NoContent();
     }
+
+    /// <summary>
+    /// Connect multiple Other Contracts records to Subscription Type
+    /// </summary>
+    [HttpPost("{Id}/contracts")]
+    public async Task<ActionResult> ConnectOtherContracts(
+        [FromRoute()] SubscriptionTypeWhereUniqueInput uniqueId,
+        [FromQuery()] ContractWhereUniqueInput[] contractsId
+    )
+    {
+        try
+        {
+            await _service.ConnectContract(uniqueId, contractsId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Disconnect multiple Other Contracts records from Subscription Type
+    /// </summary>
+    [HttpDelete("{Id}/contracts")]
+    public async Task<ActionResult> DisconnectOtherContracts(
+        [FromRoute()] SubscriptionTypeWhereUniqueInput uniqueId,
+        [FromBody()] ContractWhereUniqueInput[] contractsId
+    )
+    {
+        try
+        {
+            await _service.DisconnectContract(uniqueId, contractsId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Find multiple Other Contracts records for Subscription Type
+    /// </summary>
+    [HttpGet("{Id}/contracts")]
+    public async Task<ActionResult<List<Contract>>> FindOtherContracts(
+        [FromRoute()] SubscriptionTypeWhereUniqueInput uniqueId,
+        [FromQuery()] ContractFindManyArgs filter
+    )
+    {
+        try
+        {
+            return Ok(await _service.FindContract(uniqueId, filter));
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    /// <summary>
+    /// Update multiple Other Contracts records for Subscription Type
+    /// </summary>
+    [HttpPatch("{Id}/contracts")]
+    public async Task<ActionResult> UpdateOtherContracts(
+        [FromRoute()] SubscriptionTypeWhereUniqueInput uniqueId,
+        [FromBody()] ContractWhereUniqueInput[] contractsId
+    )
+    {
+        try
+        {
+            await _service.UpdateContract(uniqueId, contractsId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }

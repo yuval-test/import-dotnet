@@ -16,6 +16,8 @@ public class ContractUpdateInput
 
     public string? Modifiedby { get; set; }
 
+    public int? OtherSubscriptionType { get; set; }
+
     public int? RealtedSubscriptionType { get; set; }
 
     public DateTime? StartDate { get; set; }

@@ -223,7 +223,7 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
     )
     {
         var contracts = await _context
-            .Contracts.Where(m => m.SubscriptionTypeId == uniqueId.Id)
+            .Contracts.Where(m => m.RealtedSubscriptionTypeId == uniqueId.Id)
             .ApplyWhere(subscriptionTypeFindManyArgs.Where)
             .ApplySkip(subscriptionTypeFindManyArgs.Skip)
             .ApplyTake(subscriptionTypeFindManyArgs.Take)

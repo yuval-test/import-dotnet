@@ -38,11 +38,11 @@ public abstract class ContractsServiceBase : IContractsService
         {
             contract.Id = createDto.Id;
         }
-        if (createDto.SubscriptionType != null)
+        if (createDto.RealtedSubscriptionType != null)
         {
-            contract.SubscriptionType = await _context
+            contract.RealtedSubscriptionType = await _context
                 .SubscriptionTypes.Where(subscriptionType =>
-                    createDto.SubscriptionType.Id == subscriptionType.Id
+                    createDto.RealtedSubscriptionType.Id == subscriptionType.Id
                 )
                 .FirstOrDefaultAsync();
         }
@@ -81,7 +81,7 @@ public abstract class ContractsServiceBase : IContractsService
     public async Task<List<Contract>> Contracts(ContractFindManyArgs findManyArgs)
     {
         var contracts = await _context
-            .Contracts.Include(x => x.SubscriptionType)
+            .Contracts.Include(x => x.RealtedSubscriptionType)
             .ApplyWhere(findManyArgs.Where)
             .ApplySkip(findManyArgs.Skip)
             .ApplyTake(findManyArgs.Take)
@@ -147,18 +147,20 @@ public abstract class ContractsServiceBase : IContractsService
     }
 
     /// <summary>
-    /// Get a Subscription Type record for Contract
+    /// Get a Realted Subscription Type record for Contract
     /// </summary>
-    public async Task<SubscriptionType> GetSubscriptionType(ContractWhereUniqueInput uniqueId)
+    public async Task<SubscriptionType> GetRealtedSubscriptionType(
+        ContractWhereUniqueInput uniqueId
+    )
     {
         var contract = await _context
             .Contracts.Where(contract => contract.Id == uniqueId.Id)
-            .Include(contract => contract.SubscriptionType)
+            .Include(contract => contract.RealtedSubscriptionType)
             .FirstOrDefaultAsync();
         if (contract == null)
         {
             throw new NotFoundException();
         }
-        return contract.SubscriptionType.ToDto();
+        return contract.RealtedSubscriptionType.ToDto();
     }
 }

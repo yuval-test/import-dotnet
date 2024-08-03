@@ -36,7 +36,7 @@ public interface IContractsService
     public Task UpdateContract(ContractWhereUniqueInput uniqueId, ContractUpdateInput updateDto);
 
     /// <summary>
-    /// Get a Subscription Type record for Contract
+    /// Get a Realted Subscription Type record for Contract
     /// </summary>
-    public Task<SubscriptionType> GetSubscriptionType(ContractWhereUniqueInput uniqueId);
+    public Task<SubscriptionType> GetRealtedSubscriptionType(ContractWhereUniqueInput uniqueId);
 }

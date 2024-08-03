@@ -36,6 +36,14 @@ public abstract class EmployeesServiceBase : IEmployeesService
         {
             employee.Id = createDto.Id;
         }
+        if (createDto.Employees != null)
+        {
+            employee.Employees = await _context
+                .Employees.Where(employee =>
+                    createDto.Employees.Select(t => t.Id).Contains(employee.Id)
+                )
+                .ToListAsync();
+        }
 
         _context.Employees.Add(employee);
         await _context.SaveChangesAsync();
@@ -117,6 +125,15 @@ public abstract class EmployeesServiceBase : IEmployeesService
     {
         var employee = updateDto.ToModel(uniqueId);
 
+        if (updateDto.Employees != null)
+        {
+            employee.Employees = await _context
+                .Employees.Where(employee =>
+                    updateDto.Employees.Select(t => t).Contains(employee.Id)
+                )
+                .ToListAsync();
+        }
+
         _context.Entry(employee).State = EntityState.Modified;
 
         try
@@ -137,9 +154,118 @@ public abstract class EmployeesServiceBase : IEmployeesService
     }
 
     /// <summary>
-    /// Get a Employees record for Employee
+    /// Connect multiple Employees records to Employee
     /// </summary>
-    public async Task<Employee> GetEmployees(EmployeeWhereUniqueInput uniqueId)
+    public async Task ConnectEmployees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    )
+    {
+        var employee = await _context
+            .Employees.Include(x => x.Employees)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (employee == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var employees = await _context
+            .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
+            .ToListAsync();
+        if (employees.Count == 0)
+        {
+            throw new NotFoundException();
+        }
+
+        var employeesToConnect = employees.Except(employee.Employees);
+
+        foreach (var employee in employeesToConnect)
+        {
+            employee.Employees.Add(employee);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Disconnect multiple Employees records from Employee
+    /// </summary>
+    public async Task DisconnectEmployees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    )
+    {
+        var employee = await _context
+            .Employees.Include(x => x.Employees)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (employee == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var employees = await _context
+            .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
+            .ToListAsync();
+
+        foreach (var employee in employees)
+        {
+            employee.Employees?.Remove(employee);
+        }
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Find multiple Employees records for Employee
+    /// </summary>
+    public async Task<List<Employee>> FindEmployees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeFindManyArgs employeeFindManyArgs
+    )
+    {
+        var employees = await _context
+            .Employees.Where(m => m.Manager.Any(x => x.Id == uniqueId.Id))
+            .ApplyWhere(employeeFindManyArgs.Where)
+            .ApplySkip(employeeFindManyArgs.Skip)
+            .ApplyTake(employeeFindManyArgs.Take)
+            .ApplyOrderBy(employeeFindManyArgs.SortBy)
+            .ToListAsync();
+
+        return employees.Select(x => x.ToDto()).ToList();
+    }
+
+    /// <summary>
+    /// Update multiple Employees records for Employee
+    /// </summary>
+    public async Task UpdateEmployees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    )
+    {
+        var employee = await _context
+            .Employees.Include(t => t.Employees)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (employee == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var employees = await _context
+            .Employees.Where(a => employeesId.Select(x => x.Id).Contains(a.Id))
+            .ToListAsync();
+
+        if (employees.Count == 0)
+        {
+            throw new NotFoundException();
+        }
+
+        employee.Employees = employees;
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Get a Manager record for Employee
+    /// </summary>
+    public async Task<Employee> GetManager(EmployeeWhereUniqueInput uniqueId)
     {
         var employee = await _context
             .Employees.Where(employee => employee.Id == uniqueId.Id)
@@ -153,9 +279,118 @@ public abstract class EmployeesServiceBase : IEmployeesService
     }
 
     /// <summary>
-    /// Get a Supervisees record for Employee
+    /// Connect multiple Supervisees records to Employee
     /// </summary>
-    public async Task<Employee> GetSupervisees(EmployeeWhereUniqueInput uniqueId)
+    public async Task ConnectSupervisees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    )
+    {
+        var employee = await _context
+            .Employees.Include(x => x.Employees)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (employee == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var employees = await _context
+            .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
+            .ToListAsync();
+        if (employees.Count == 0)
+        {
+            throw new NotFoundException();
+        }
+
+        var employeesToConnect = employees.Except(employee.Employees);
+
+        foreach (var employee in employeesToConnect)
+        {
+            employee.Employees.Add(employee);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Disconnect multiple Supervisees records from Employee
+    /// </summary>
+    public async Task DisconnectSupervisees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    )
+    {
+        var employee = await _context
+            .Employees.Include(x => x.Employees)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (employee == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var employees = await _context
+            .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
+            .ToListAsync();
+
+        foreach (var employee in employees)
+        {
+            employee.Employees?.Remove(employee);
+        }
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Find multiple Supervisees records for Employee
+    /// </summary>
+    public async Task<List<Employee>> FindSupervisees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeFindManyArgs employeeFindManyArgs
+    )
+    {
+        var employees = await _context
+            .Employees.Where(m => m.Supervisor.Any(x => x.Id == uniqueId.Id))
+            .ApplyWhere(employeeFindManyArgs.Where)
+            .ApplySkip(employeeFindManyArgs.Skip)
+            .ApplyTake(employeeFindManyArgs.Take)
+            .ApplyOrderBy(employeeFindManyArgs.SortBy)
+            .ToListAsync();
+
+        return employees.Select(x => x.ToDto()).ToList();
+    }
+
+    /// <summary>
+    /// Update multiple Supervisees records for Employee
+    /// </summary>
+    public async Task UpdateSupervisees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    )
+    {
+        var employee = await _context
+            .Employees.Include(t => t.Employees)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (employee == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var employees = await _context
+            .Employees.Where(a => employeesId.Select(x => x.Id).Contains(a.Id))
+            .ToListAsync();
+
+        if (employees.Count == 0)
+        {
+            throw new NotFoundException();
+        }
+
+        employee.Employees = employees;
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Get a Supervisor record for Employee
+    /// </summary>
+    public async Task<Employee> GetSupervisor(EmployeeWhereUniqueInput uniqueId)
     {
         var employee = await _context
             .Employees.Where(employee => employee.Id == uniqueId.Id)

@@ -4,7 +4,7 @@ public class EmployeeCreateInput
 {
     public DateTime CreatedAt { get; set; }
 
-    public Employee? Employees { get; set; }
+    public List<Employee>? Employees { get; set; }
 
     public string? Id { get; set; }
 
@@ -16,7 +16,7 @@ public class EmployeeCreateInput
 
     public DateTime? StartDate { get; set; }
 
-    public Employee? Supervisees { get; set; }
+    public List<Employee>? Supervisees { get; set; }
 
     public Employee? Supervisor { get; set; }
 

@@ -36,12 +36,76 @@ public interface IEmployeesService
     public Task UpdateEmployee(EmployeeWhereUniqueInput uniqueId, EmployeeUpdateInput updateDto);
 
     /// <summary>
-    /// Get a Employees record for Employee
+    /// Connect multiple Employees records to Employee
     /// </summary>
-    public Task<Employee> GetEmployees(EmployeeWhereUniqueInput uniqueId);
+    public Task ConnectEmployees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    );
 
     /// <summary>
-    /// Get a Supervisees record for Employee
+    /// Disconnect multiple Employees records from Employee
     /// </summary>
-    public Task<Employee> GetSupervisees(EmployeeWhereUniqueInput uniqueId);
+    public Task DisconnectEmployees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    );
+
+    /// <summary>
+    /// Find multiple Employees records for Employee
+    /// </summary>
+    public Task<List<Employee>> FindEmployees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeFindManyArgs EmployeeFindManyArgs
+    );
+
+    /// <summary>
+    /// Update multiple Employees records for Employee
+    /// </summary>
+    public Task UpdateEmployees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    );
+
+    /// <summary>
+    /// Get a Manager record for Employee
+    /// </summary>
+    public Task<Employee> GetManager(EmployeeWhereUniqueInput uniqueId);
+
+    /// <summary>
+    /// Connect multiple Supervisees records to Employee
+    /// </summary>
+    public Task ConnectSupervisees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    );
+
+    /// <summary>
+    /// Disconnect multiple Supervisees records from Employee
+    /// </summary>
+    public Task DisconnectSupervisees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    );
+
+    /// <summary>
+    /// Find multiple Supervisees records for Employee
+    /// </summary>
+    public Task<List<Employee>> FindSupervisees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeFindManyArgs EmployeeFindManyArgs
+    );
+
+    /// <summary>
+    /// Update multiple Supervisees records for Employee
+    /// </summary>
+    public Task UpdateSupervisees(
+        EmployeeWhereUniqueInput uniqueId,
+        EmployeeWhereUniqueInput[] employeesId
+    );
+
+    /// <summary>
+    /// Get a Supervisor record for Employee
+    /// </summary>
+    public Task<Employee> GetSupervisor(EmployeeWhereUniqueInput uniqueId);
 }

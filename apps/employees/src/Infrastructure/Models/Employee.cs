@@ -9,7 +9,7 @@ public class EmployeeDbModel
     [Required()]
     public DateTime CreatedAt { get; set; }
 
-    public EmployeeDbModel? Employees { get; set; } = null;
+    public List<EmployeeDbModel>? Employees { get; set; } = new List<EmployeeDbModel>();
 
     [Key()]
     [Required()]
@@ -28,7 +28,7 @@ public class EmployeeDbModel
 
     public DateTime? StartDate { get; set; }
 
-    public EmployeeDbModel? Supervisees { get; set; } = null;
+    public List<EmployeeDbModel>? Supervisees { get; set; } = new List<EmployeeDbModel>();
 
     public string? SupervisorId { get; set; }
 

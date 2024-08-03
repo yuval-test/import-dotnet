@@ -42,6 +42,13 @@ public abstract class EmployeesServiceBase : IEmployeesService
                 .ToListAsync();
         }
 
+        if (createDto.Groups != null)
+        {
+            employee.Groups = await _context
+                .Groups.Where(group => createDto.Groups.Select(t => t.Id).Contains(group.Id))
+                .ToListAsync();
+        }
+
         _context.Employees.Add(employee);
         await _context.SaveChangesAsync();
 
@@ -77,6 +84,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
     {
         var employees = await _context
             .Employees.Include(x => x.Employees)
+            .Include(x => x.Groups)
             .ApplyWhere(findManyArgs.Where)
             .ApplySkip(findManyArgs.Skip)
             .ApplyTake(findManyArgs.Take)
@@ -128,6 +136,13 @@ public abstract class EmployeesServiceBase : IEmployeesService
                 .Employees.Where(employee =>
                     updateDto.Employees.Select(t => t).Contains(employee.Id)
                 )
+                .ToListAsync();
+        }
+
+        if (updateDto.Groups != null)
+        {
+            employee.Groups = await _context
+                .Groups.Where(group => updateDto.Groups.Select(t => t).Contains(group.Id))
                 .ToListAsync();
         }
 
@@ -256,6 +271,115 @@ public abstract class EmployeesServiceBase : IEmployeesService
         }
 
         employee.Employees = employees;
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Connect multiple groups records to Employee
+    /// </summary>
+    public async Task ConnectGroups(
+        EmployeeWhereUniqueInput uniqueId,
+        GroupWhereUniqueInput[] groupsId
+    )
+    {
+        var employee = await _context
+            .Employees.Include(x => x.Groups)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (employee == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var groups = await _context
+            .Groups.Where(t => groupsId.Select(x => x.Id).Contains(t.Id))
+            .ToListAsync();
+        if (groups.Count == 0)
+        {
+            throw new NotFoundException();
+        }
+
+        var groupsToConnect = groups.Except(employee.Groups);
+
+        foreach (var group in groupsToConnect)
+        {
+            employee.Groups.Add(group);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Disconnect multiple groups records from Employee
+    /// </summary>
+    public async Task DisconnectGroups(
+        EmployeeWhereUniqueInput uniqueId,
+        GroupWhereUniqueInput[] groupsId
+    )
+    {
+        var employee = await _context
+            .Employees.Include(x => x.Groups)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (employee == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var groups = await _context
+            .Groups.Where(t => groupsId.Select(x => x.Id).Contains(t.Id))
+            .ToListAsync();
+
+        foreach (var group in groups)
+        {
+            employee.Groups?.Remove(group);
+        }
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Find multiple groups records for Employee
+    /// </summary>
+    public async Task<List<Group>> FindGroups(
+        EmployeeWhereUniqueInput uniqueId,
+        GroupFindManyArgs employeeFindManyArgs
+    )
+    {
+        var groups = await _context
+            .Groups.Where(m => m.Employees.Any(x => x.Id == uniqueId.Id))
+            .ApplyWhere(employeeFindManyArgs.Where)
+            .ApplySkip(employeeFindManyArgs.Skip)
+            .ApplyTake(employeeFindManyArgs.Take)
+            .ApplyOrderBy(employeeFindManyArgs.SortBy)
+            .ToListAsync();
+
+        return groups.Select(x => x.ToDto()).ToList();
+    }
+
+    /// <summary>
+    /// Update multiple groups records for Employee
+    /// </summary>
+    public async Task UpdateGroups(
+        EmployeeWhereUniqueInput uniqueId,
+        GroupWhereUniqueInput[] groupsId
+    )
+    {
+        var employee = await _context
+            .Employees.Include(t => t.Groups)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (employee == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var groups = await _context
+            .Groups.Where(a => groupsId.Select(x => x.Id).Contains(a.Id))
+            .ToListAsync();
+
+        if (groups.Count == 0)
+        {
+            throw new NotFoundException();
+        }
+
+        employee.Groups = groups;
         await _context.SaveChangesAsync();
     }
 

@@ -68,6 +68,32 @@ public interface IEmployeesService
     );
 
     /// <summary>
+    /// Connect multiple groups records to Employee
+    /// </summary>
+    public Task ConnectGroups(EmployeeWhereUniqueInput uniqueId, GroupWhereUniqueInput[] groupsId);
+
+    /// <summary>
+    /// Disconnect multiple groups records from Employee
+    /// </summary>
+    public Task DisconnectGroups(
+        EmployeeWhereUniqueInput uniqueId,
+        GroupWhereUniqueInput[] groupsId
+    );
+
+    /// <summary>
+    /// Find multiple groups records for Employee
+    /// </summary>
+    public Task<List<Group>> FindGroups(
+        EmployeeWhereUniqueInput uniqueId,
+        GroupFindManyArgs GroupFindManyArgs
+    );
+
+    /// <summary>
+    /// Update multiple groups records for Employee
+    /// </summary>
+    public Task UpdateGroups(EmployeeWhereUniqueInput uniqueId, GroupWhereUniqueInput[] groupsId);
+
+    /// <summary>
     /// Get a Manager record for Employee
     /// </summary>
     public Task<Employee> GetManager(EmployeeWhereUniqueInput uniqueId);

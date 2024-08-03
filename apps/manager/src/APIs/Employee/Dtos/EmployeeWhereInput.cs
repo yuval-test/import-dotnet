@@ -6,6 +6,8 @@ public class EmployeeWhereInput
 
     public List<string>? Employees { get; set; }
 
+    public List<string>? Groups { get; set; }
+
     public string? Id { get; set; }
 
     public string? Manager { get; set; }

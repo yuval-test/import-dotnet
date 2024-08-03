@@ -11,6 +11,7 @@ public static class EmployeesExtensions
         {
             CreatedAt = model.CreatedAt,
             Employees = model.Employees?.Select(x => x.Id).ToList(),
+            Groups = model.Groups?.Select(x => x.Id).ToList(),
             Id = model.Id,
             Manager = model.ManagerId,
             UpdatedAt = model.UpdatedAt,

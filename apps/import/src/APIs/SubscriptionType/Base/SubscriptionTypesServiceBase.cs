@@ -261,4 +261,113 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
         subscriptionType.Contract = contracts;
         await _context.SaveChangesAsync();
     }
+
+    /// <summary>
+    /// Connect multiple Other Contracts records to Subscription Type
+    /// </summary>
+    public async Task ConnectOtherContracts(
+        SubscriptionTypeWhereUniqueInput uniqueId,
+        ContractWhereUniqueInput[] contractsId
+    )
+    {
+        var subscriptionType = await _context
+            .SubscriptionTypes.Include(x => x.Contract)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (subscriptionType == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var contracts = await _context
+            .Contracts.Where(t => contractsId.Select(x => x.Id).Contains(t.Id))
+            .ToListAsync();
+        if (contracts.Count == 0)
+        {
+            throw new NotFoundException();
+        }
+
+        var contractsToConnect = contracts.Except(subscriptionType.Contract);
+
+        foreach (var contract in contractsToConnect)
+        {
+            subscriptionType.Contract.Add(contract);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Disconnect multiple Other Contracts records from Subscription Type
+    /// </summary>
+    public async Task DisconnectOtherContracts(
+        SubscriptionTypeWhereUniqueInput uniqueId,
+        ContractWhereUniqueInput[] contractsId
+    )
+    {
+        var subscriptionType = await _context
+            .SubscriptionTypes.Include(x => x.Contract)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (subscriptionType == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var contracts = await _context
+            .Contracts.Where(t => contractsId.Select(x => x.Id).Contains(t.Id))
+            .ToListAsync();
+
+        foreach (var contract in contracts)
+        {
+            subscriptionType.Contract?.Remove(contract);
+        }
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Find multiple Other Contracts records for Subscription Type
+    /// </summary>
+    public async Task<List<Contract>> FindOtherContracts(
+        SubscriptionTypeWhereUniqueInput uniqueId,
+        ContractFindManyArgs subscriptionTypeFindManyArgs
+    )
+    {
+        var contracts = await _context
+            .Contracts.Where(m => m.OtherSubscriptionTypeId == uniqueId.Id)
+            .ApplyWhere(subscriptionTypeFindManyArgs.Where)
+            .ApplySkip(subscriptionTypeFindManyArgs.Skip)
+            .ApplyTake(subscriptionTypeFindManyArgs.Take)
+            .ApplyOrderBy(subscriptionTypeFindManyArgs.SortBy)
+            .ToListAsync();
+
+        return contracts.Select(x => x.ToDto()).ToList();
+    }
+
+    /// <summary>
+    /// Update multiple Other Contracts records for Subscription Type
+    /// </summary>
+    public async Task UpdateOtherContracts(
+        SubscriptionTypeWhereUniqueInput uniqueId,
+        ContractWhereUniqueInput[] contractsId
+    )
+    {
+        var subscriptionType = await _context
+            .SubscriptionTypes.Include(t => t.Contract)
+            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+        if (subscriptionType == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var contracts = await _context
+            .Contracts.Where(a => contractsId.Select(x => x.Id).Contains(a.Id))
+            .ToListAsync();
+
+        if (contracts.Count == 0)
+        {
+            throw new NotFoundException();
+        }
+
+        subscriptionType.Contract = contracts;
+        await _context.SaveChangesAsync();
+    }
 }

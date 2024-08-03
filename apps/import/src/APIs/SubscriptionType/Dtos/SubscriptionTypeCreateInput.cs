@@ -7,4 +7,6 @@ public class SubscriptionTypeCreateInput
     public string Description { get; set; }
 
     public int? Id { get; set; }
+
+    public List<Contract>? OtherContracts { get; set; }
 }

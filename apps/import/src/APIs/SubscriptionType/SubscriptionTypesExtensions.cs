@@ -12,6 +12,7 @@ public static class SubscriptionTypesExtensions
             Contract = model.Contract?.Select(x => x.Id).ToList(),
             Description = model.Description,
             Id = model.Id,
+            OtherContracts = model.Contract?.Select(x => x.Id).ToList(),
         };
     }
 

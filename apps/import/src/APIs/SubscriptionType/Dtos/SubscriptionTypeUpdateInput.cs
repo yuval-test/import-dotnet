@@ -7,4 +7,6 @@ public class SubscriptionTypeUpdateInput
     public string? Description { get; set; }
 
     public int? Id { get; set; }
+
+    public List<string>? OtherContracts { get; set; }
 }

@@ -38,11 +38,11 @@ public abstract class ContractsServiceBase : IContractsService
         {
             contract.Id = createDto.Id;
         }
-        if (createDto.RealtedSubscriptionType != null)
+        if (createDto.OtherSubscriptionType != null)
         {
-            contract.RealtedSubscriptionType = await _context
+            contract.OtherSubscriptionType = await _context
                 .SubscriptionTypes.Where(subscriptionType =>
-                    createDto.RealtedSubscriptionType.Id == subscriptionType.Id
+                    createDto.OtherSubscriptionType.Id == subscriptionType.Id
                 )
                 .FirstOrDefaultAsync();
         }
@@ -81,7 +81,7 @@ public abstract class ContractsServiceBase : IContractsService
     public async Task<List<Contract>> Contracts(ContractFindManyArgs findManyArgs)
     {
         var contracts = await _context
-            .Contracts.Include(x => x.RealtedSubscriptionType)
+            .Contracts.Include(x => x.OtherSubscriptionType)
             .ApplyWhere(findManyArgs.Where)
             .ApplySkip(findManyArgs.Skip)
             .ApplyTake(findManyArgs.Take)
@@ -155,12 +155,12 @@ public abstract class ContractsServiceBase : IContractsService
     {
         var contract = await _context
             .Contracts.Where(contract => contract.Id == uniqueId.Id)
-            .Include(contract => contract.RealtedSubscriptionType)
+            .Include(contract => contract.OtherSubscriptionType)
             .FirstOrDefaultAsync();
         if (contract == null)
         {
             throw new NotFoundException();
         }
-        return contract.RealtedSubscriptionType.ToDto();
+        return contract.OtherSubscriptionType.ToDto();
     }
 }

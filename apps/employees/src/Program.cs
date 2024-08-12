@@ -1,5 +1,6 @@
 using System.Reflection;
 using Employees;
+using Employees.Brokers.Kafka;
 using Employees.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,7 @@ builder.Services.AddCors(builder =>
         }
     );
 });
+builder.AddKafka();
 builder.Services.AddDbContext<EmployeesDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );

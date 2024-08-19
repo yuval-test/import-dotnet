@@ -47,6 +47,15 @@ public abstract class ContractsServiceBase : IContractsService
                 .FirstOrDefaultAsync();
         }
 
+        if (createDto.RealtedSubscriptionType != null)
+        {
+            contract.RealtedSubscriptionType = await _context
+                .SubscriptionTypes.Where(subscriptionType =>
+                    createDto.RealtedSubscriptionType.Id == subscriptionType.Id
+                )
+                .FirstOrDefaultAsync();
+        }
+
         _context.Contracts.Add(contract);
         await _context.SaveChangesAsync();
 
@@ -155,12 +164,12 @@ public abstract class ContractsServiceBase : IContractsService
     {
         var contract = await _context
             .Contracts.Where(contract => contract.Id == uniqueId.Id)
-            .Include(contract => contract.OtherSubscriptionType)
+            .Include(contract => contract.RealtedSubscriptionType)
             .FirstOrDefaultAsync();
         if (contract == null)
         {
             throw new NotFoundException();
         }
-        return contract.OtherSubscriptionType.ToDto();
+        return contract.RealtedSubscriptionType.ToDto();
     }
 }

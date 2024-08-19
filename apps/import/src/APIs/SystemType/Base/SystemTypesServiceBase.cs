@@ -150,10 +150,10 @@ public abstract class SystemTypesServiceBase : ISystemTypesService
         ClientWhereUniqueInput[] clientsId
     )
     {
-        var systemType = await _context
+        var parent = await _context
             .SystemTypes.Include(x => x.Client)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (systemType == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -166,11 +166,11 @@ public abstract class SystemTypesServiceBase : ISystemTypesService
             throw new NotFoundException();
         }
 
-        var clientsToConnect = clients.Except(systemType.Client);
+        var clientsToConnect = clients.Except(parent.Client);
 
         foreach (var client in clientsToConnect)
         {
-            systemType.Client.Add(client);
+            parent.Client.Add(client);
         }
 
         await _context.SaveChangesAsync();
@@ -184,10 +184,10 @@ public abstract class SystemTypesServiceBase : ISystemTypesService
         ClientWhereUniqueInput[] clientsId
     )
     {
-        var systemType = await _context
+        var parent = await _context
             .SystemTypes.Include(x => x.Client)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (systemType == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -198,7 +198,7 @@ public abstract class SystemTypesServiceBase : ISystemTypesService
 
         foreach (var client in clients)
         {
-            systemType.Client?.Remove(client);
+            parent.Client?.Remove(client);
         }
         await _context.SaveChangesAsync();
     }

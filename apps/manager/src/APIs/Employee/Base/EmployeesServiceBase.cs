@@ -49,6 +49,13 @@ public abstract class EmployeesServiceBase : IEmployeesService
                 .ToListAsync();
         }
 
+        if (createDto.Manager != null)
+        {
+            employee.Manager = await _context
+                .Employees.Where(employee => createDto.Manager.Id == employee.Id)
+                .FirstOrDefaultAsync();
+        }
+
         _context.Employees.Add(employee);
         await _context.SaveChangesAsync();
 
@@ -173,10 +180,10 @@ public abstract class EmployeesServiceBase : IEmployeesService
         EmployeeWhereUniqueInput[] employeesId
     )
     {
-        var employee = await _context
+        var parent = await _context
             .Employees.Include(x => x.Employees)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (employee == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -189,11 +196,11 @@ public abstract class EmployeesServiceBase : IEmployeesService
             throw new NotFoundException();
         }
 
-        var employeesToConnect = employees.Except(employee.Employees);
+        var employeesToConnect = employees.Except(parent.Employees);
 
         foreach (var employee in employeesToConnect)
         {
-            employee.Employees.Add(employee);
+            parent.Employees.Add(employee);
         }
 
         await _context.SaveChangesAsync();
@@ -207,10 +214,10 @@ public abstract class EmployeesServiceBase : IEmployeesService
         EmployeeWhereUniqueInput[] employeesId
     )
     {
-        var employee = await _context
+        var parent = await _context
             .Employees.Include(x => x.Employees)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (employee == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -221,7 +228,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
 
         foreach (var employee in employees)
         {
-            employee.Employees?.Remove(employee);
+            parent.Employees?.Remove(employee);
         }
         await _context.SaveChangesAsync();
     }
@@ -235,7 +242,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
     )
     {
         var employees = await _context
-            .Employees.Where(m => m.Manager.Any(x => x.Id == uniqueId.Id))
+            .Employees.Where(m => m.ManagerId == uniqueId.Id)
             .ApplyWhere(employeeFindManyArgs.Where)
             .ApplySkip(employeeFindManyArgs.Skip)
             .ApplyTake(employeeFindManyArgs.Take)
@@ -282,10 +289,10 @@ public abstract class EmployeesServiceBase : IEmployeesService
         GroupWhereUniqueInput[] groupsId
     )
     {
-        var employee = await _context
+        var parent = await _context
             .Employees.Include(x => x.Groups)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (employee == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -298,11 +305,11 @@ public abstract class EmployeesServiceBase : IEmployeesService
             throw new NotFoundException();
         }
 
-        var groupsToConnect = groups.Except(employee.Groups);
+        var groupsToConnect = groups.Except(parent.Groups);
 
         foreach (var group in groupsToConnect)
         {
-            employee.Groups.Add(group);
+            parent.Groups.Add(group);
         }
 
         await _context.SaveChangesAsync();
@@ -316,10 +323,10 @@ public abstract class EmployeesServiceBase : IEmployeesService
         GroupWhereUniqueInput[] groupsId
     )
     {
-        var employee = await _context
+        var parent = await _context
             .Employees.Include(x => x.Groups)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (employee == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -330,7 +337,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
 
         foreach (var group in groups)
         {
-            employee.Groups?.Remove(group);
+            parent.Groups?.Remove(group);
         }
         await _context.SaveChangesAsync();
     }
@@ -344,7 +351,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
     )
     {
         var groups = await _context
-            .Groups.Where(m => m.Employees.Any(x => x.Id == uniqueId.Id))
+            .Groups.Where(m => m.EmployeesId == uniqueId.Id)
             .ApplyWhere(employeeFindManyArgs.Where)
             .ApplySkip(employeeFindManyArgs.Skip)
             .ApplyTake(employeeFindManyArgs.Take)
@@ -390,12 +397,12 @@ public abstract class EmployeesServiceBase : IEmployeesService
     {
         var employee = await _context
             .Employees.Where(employee => employee.Id == uniqueId.Id)
-            .Include(employee => employee.Employees)
+            .Include(employee => employee.Manager)
             .FirstOrDefaultAsync();
         if (employee == null)
         {
             throw new NotFoundException();
         }
-        return employee.Employees.ToDto();
+        return employee.Manager.ToDto();
     }
 }

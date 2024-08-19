@@ -155,10 +155,10 @@ public abstract class GroupsServiceBase : IGroupsService
         EmployeeWhereUniqueInput[] employeesId
     )
     {
-        var group = await _context
+        var parent = await _context
             .Groups.Include(x => x.Employees)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (group == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -171,11 +171,11 @@ public abstract class GroupsServiceBase : IGroupsService
             throw new NotFoundException();
         }
 
-        var employeesToConnect = employees.Except(group.Employees);
+        var employeesToConnect = employees.Except(parent.Employees);
 
         foreach (var employee in employeesToConnect)
         {
-            group.Employees.Add(employee);
+            parent.Employees.Add(employee);
         }
 
         await _context.SaveChangesAsync();
@@ -189,10 +189,10 @@ public abstract class GroupsServiceBase : IGroupsService
         EmployeeWhereUniqueInput[] employeesId
     )
     {
-        var group = await _context
+        var parent = await _context
             .Groups.Include(x => x.Employees)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (group == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -203,7 +203,7 @@ public abstract class GroupsServiceBase : IGroupsService
 
         foreach (var employee in employees)
         {
-            group.Employees?.Remove(employee);
+            parent.Employees?.Remove(employee);
         }
         await _context.SaveChangesAsync();
     }
@@ -217,7 +217,7 @@ public abstract class GroupsServiceBase : IGroupsService
     )
     {
         var employees = await _context
-            .Employees.Where(m => m.Groups.Any(x => x.Id == uniqueId.Id))
+            .Employees.Where(m => m.GroupsId == uniqueId.Id)
             .ApplyWhere(groupFindManyArgs.Where)
             .ApplySkip(groupFindManyArgs.Skip)
             .ApplyTake(groupFindManyArgs.Take)

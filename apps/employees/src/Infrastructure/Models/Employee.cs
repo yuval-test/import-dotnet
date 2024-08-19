@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Employees.Infrastructure.Models;
 
@@ -9,16 +9,9 @@ public class EmployeeDbModel
     [Required()]
     public DateTime CreatedAt { get; set; }
 
-    public List<EmployeeDbModel>? Employees { get; set; } = new List<EmployeeDbModel>();
-
     [Key()]
     [Required()]
     public string Id { get; set; }
-
-    public string? ManagerId { get; set; }
-
-    [ForeignKey(nameof(ManagerId))]
-    public EmployeeDbModel? Manager { get; set; } = null;
 
     [StringLength(1000)]
     public string? Name { get; set; }

@@ -40,6 +40,15 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
                 .ToListAsync();
         }
 
+        if (createDto.OtherContracts != null)
+        {
+            subscriptionType.OtherContracts = await _context
+                .Contracts.Where(contract =>
+                    createDto.OtherContracts.Select(t => t.Id).Contains(contract.Id)
+                )
+                .ToListAsync();
+        }
+
         _context.SubscriptionTypes.Add(subscriptionType);
         await _context.SaveChangesAsync();
 
@@ -161,10 +170,10 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
         ContractWhereUniqueInput[] contractsId
     )
     {
-        var subscriptionType = await _context
+        var parent = await _context
             .SubscriptionTypes.Include(x => x.Contract)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (subscriptionType == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -177,11 +186,11 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
             throw new NotFoundException();
         }
 
-        var contractsToConnect = contracts.Except(subscriptionType.Contract);
+        var contractsToConnect = contracts.Except(parent.Contract);
 
         foreach (var contract in contractsToConnect)
         {
-            subscriptionType.Contract.Add(contract);
+            parent.Contract.Add(contract);
         }
 
         await _context.SaveChangesAsync();
@@ -195,10 +204,10 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
         ContractWhereUniqueInput[] contractsId
     )
     {
-        var subscriptionType = await _context
+        var parent = await _context
             .SubscriptionTypes.Include(x => x.Contract)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (subscriptionType == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -209,7 +218,7 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
 
         foreach (var contract in contracts)
         {
-            subscriptionType.Contract?.Remove(contract);
+            parent.Contract?.Remove(contract);
         }
         await _context.SaveChangesAsync();
     }
@@ -270,10 +279,10 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
         ContractWhereUniqueInput[] contractsId
     )
     {
-        var subscriptionType = await _context
-            .SubscriptionTypes.Include(x => x.Contract)
+        var parent = await _context
+            .SubscriptionTypes.Include(x => x.OtherContracts)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (subscriptionType == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -286,11 +295,11 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
             throw new NotFoundException();
         }
 
-        var contractsToConnect = contracts.Except(subscriptionType.Contract);
+        var contractsToConnect = contracts.Except(parent.OtherContracts);
 
         foreach (var contract in contractsToConnect)
         {
-            subscriptionType.Contract.Add(contract);
+            parent.OtherContracts.Add(contract);
         }
 
         await _context.SaveChangesAsync();
@@ -304,10 +313,10 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
         ContractWhereUniqueInput[] contractsId
     )
     {
-        var subscriptionType = await _context
-            .SubscriptionTypes.Include(x => x.Contract)
+        var parent = await _context
+            .SubscriptionTypes.Include(x => x.OtherContracts)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
-        if (subscriptionType == null)
+        if (parent == null)
         {
             throw new NotFoundException();
         }
@@ -318,7 +327,7 @@ public abstract class SubscriptionTypesServiceBase : ISubscriptionTypesService
 
         foreach (var contract in contracts)
         {
-            subscriptionType.Contract?.Remove(contract);
+            parent.OtherContracts?.Remove(contract);
         }
         await _context.SaveChangesAsync();
     }

@@ -1,5 +1,3 @@
 namespace Employees;
 
-public class SeedDevelopmentData
-{
-}
+public class SeedDevelopmentData { }

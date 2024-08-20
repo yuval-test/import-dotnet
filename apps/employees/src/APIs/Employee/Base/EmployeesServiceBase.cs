@@ -152,9 +152,32 @@ public abstract class EmployeesServiceBase : IEmployeesService
         {
             employee.Employees = await _context
                 .Employees.Where(employee =>
-                    updateDto.Employees.Select(t => t).Contains(employee.Id)
+                    updateDto.Employees.Select(t => t.Id).Contains(employee.Id)
                 )
                 .ToListAsync();
+        }
+
+        if (updateDto.Manager != null)
+        {
+            employee.Manager = await _context
+                .Employees.Where(employee => updateDto.Manager.Id == employee.Id)
+                .FirstOrDefaultAsync();
+        }
+
+        if (updateDto.Supervisees != null)
+        {
+            employee.Supervisees = await _context
+                .Employees.Where(employee =>
+                    updateDto.Supervisees.Select(t => t.Id).Contains(employee.Id)
+                )
+                .ToListAsync();
+        }
+
+        if (updateDto.Supervisor != null)
+        {
+            employee.Supervisor = await _context
+                .Employees.Where(employee => updateDto.Supervisor.Id == employee.Id)
+                .FirstOrDefaultAsync();
         }
 
         _context.Entry(employee).State = EntityState.Modified;

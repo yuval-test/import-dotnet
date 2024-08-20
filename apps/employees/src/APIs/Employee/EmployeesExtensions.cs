@@ -16,7 +16,7 @@ public static class EmployeesExtensions
             Name = model.Name,
             Phone = model.Phone,
             StartDate = model.StartDate,
-            Supervisees = model.Employees?.Select(x => x.Id).ToList(),
+            Supervisees = model.Supervisees?.Select(x => x.Id).ToList(),
             Supervisor = model.SupervisorId,
             UpdatedAt = model.UpdatedAt,
         };

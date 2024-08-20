@@ -108,9 +108,103 @@ public abstract class EmployeesControllerBase : ControllerBase
     }
 
     /// <summary>
-    /// Connect multiple Supervisees records to Employee
+    /// Connect multiple Employees records to Employee
     /// </summary>
     [HttpPost("{Id}/employees")]
+    public async Task<ActionResult> ConnectEmployees(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId,
+        [FromQuery()] EmployeeWhereUniqueInput[] employeesId
+    )
+    {
+        try
+        {
+            await _service.ConnectEmployees(uniqueId, employeesId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Disconnect multiple Employees records from Employee
+    /// </summary>
+    [HttpDelete("{Id}/employees")]
+    public async Task<ActionResult> DisconnectEmployees(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId,
+        [FromBody()] EmployeeWhereUniqueInput[] employeesId
+    )
+    {
+        try
+        {
+            await _service.DisconnectEmployees(uniqueId, employeesId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Find multiple Employees records for Employee
+    /// </summary>
+    [HttpGet("{Id}/employees")]
+    public async Task<ActionResult<List<Employee>>> FindEmployees(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId,
+        [FromQuery()] EmployeeFindManyArgs filter
+    )
+    {
+        try
+        {
+            return Ok(await _service.FindEmployees(uniqueId, filter));
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    /// <summary>
+    /// Update multiple Employees records for Employee
+    /// </summary>
+    [HttpPatch("{Id}/employees")]
+    public async Task<ActionResult> UpdateEmployees(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId,
+        [FromBody()] EmployeeWhereUniqueInput[] employeesId
+    )
+    {
+        try
+        {
+            await _service.UpdateEmployees(uniqueId, employeesId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Get a Manager record for Employee
+    /// </summary>
+    [HttpGet("{Id}/manager")]
+    public async Task<ActionResult<List<Employee>>> GetManager(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId
+    )
+    {
+        var employee = await _service.GetManager(uniqueId);
+        return Ok(employee);
+    }
+
+    /// <summary>
+    /// Connect multiple Supervisees records to Employee
+    /// </summary>
+    [HttpPost("{Id}/supervisees")]
     public async Task<ActionResult> ConnectSupervisees(
         [FromRoute()] EmployeeWhereUniqueInput uniqueId,
         [FromQuery()] EmployeeWhereUniqueInput[] employeesId
@@ -118,7 +212,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     {
         try
         {
-            await _service.ConnectSupervisees(uniqueId, employeesId);
+            await _service.ConnectEmployees(uniqueId, employeesId);
         }
         catch (NotFoundException)
         {
@@ -131,7 +225,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// <summary>
     /// Disconnect multiple Supervisees records from Employee
     /// </summary>
-    [HttpDelete("{Id}/employees")]
+    [HttpDelete("{Id}/supervisees")]
     public async Task<ActionResult> DisconnectSupervisees(
         [FromRoute()] EmployeeWhereUniqueInput uniqueId,
         [FromBody()] EmployeeWhereUniqueInput[] employeesId
@@ -139,7 +233,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     {
         try
         {
-            await _service.DisconnectSupervisees(uniqueId, employeesId);
+            await _service.DisconnectEmployees(uniqueId, employeesId);
         }
         catch (NotFoundException)
         {
@@ -152,7 +246,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// <summary>
     /// Find multiple Supervisees records for Employee
     /// </summary>
-    [HttpGet("{Id}/employees")]
+    [HttpGet("{Id}/supervisees")]
     public async Task<ActionResult<List<Employee>>> FindSupervisees(
         [FromRoute()] EmployeeWhereUniqueInput uniqueId,
         [FromQuery()] EmployeeFindManyArgs filter
@@ -160,7 +254,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     {
         try
         {
-            return Ok(await _service.FindSupervisees(uniqueId, filter));
+            return Ok(await _service.FindEmployees(uniqueId, filter));
         }
         catch (NotFoundException)
         {
@@ -171,7 +265,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// <summary>
     /// Update multiple Supervisees records for Employee
     /// </summary>
-    [HttpPatch("{Id}/employees")]
+    [HttpPatch("{Id}/supervisees")]
     public async Task<ActionResult> UpdateSupervisees(
         [FromRoute()] EmployeeWhereUniqueInput uniqueId,
         [FromBody()] EmployeeWhereUniqueInput[] employeesId
@@ -179,7 +273,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     {
         try
         {
-            await _service.UpdateSupervisees(uniqueId, employeesId);
+            await _service.UpdateEmployees(uniqueId, employeesId);
         }
         catch (NotFoundException)
         {
@@ -192,7 +286,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// <summary>
     /// Get a Supervisor record for Employee
     /// </summary>
-    [HttpGet("{Id}/employees")]
+    [HttpGet("{Id}/supervisor")]
     public async Task<ActionResult<List<Employee>>> GetSupervisor(
         [FromRoute()] EmployeeWhereUniqueInput uniqueId
     )

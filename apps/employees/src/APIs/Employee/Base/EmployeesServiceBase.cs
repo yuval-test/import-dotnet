@@ -215,7 +215,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// </summary>
     public async Task DisconnectEmployees(
         EmployeeWhereUniqueInput uniqueId,
-        EmployeeWhereUniqueInput[] employeesId
+        EmployeeWhereUniqueInput[] childrenIds
     )
     {
         var parent = await _context
@@ -226,13 +226,13 @@ public abstract class EmployeesServiceBase : IEmployeesService
             throw new NotFoundException();
         }
 
-        var employees = await _context
-            .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
+        var children = await _context
+            .Employees.Where(t => childrenIds.Select(x => x.Id).Contains(t.Id))
             .ToListAsync();
 
-        foreach (var employee in employees)
+        foreach (var child in children)
         {
-            parent.Employees?.Remove(employee);
+            parent.Employees?.Remove(child);
         }
         await _context.SaveChangesAsync();
     }
@@ -261,7 +261,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// </summary>
     public async Task UpdateEmployees(
         EmployeeWhereUniqueInput uniqueId,
-        EmployeeWhereUniqueInput[] employeesId
+        EmployeeWhereUniqueInput[] childrenIds
     )
     {
         var employee = await _context
@@ -272,16 +272,16 @@ public abstract class EmployeesServiceBase : IEmployeesService
             throw new NotFoundException();
         }
 
-        var employees = await _context
-            .Employees.Where(a => employeesId.Select(x => x.Id).Contains(a.Id))
+        var children = await _context
+            .Employees.Where(a => childrenIds.Select(x => x.Id).Contains(a.Id))
             .ToListAsync();
 
-        if (employees.Count == 0)
+        if (children.Count == 0)
         {
             throw new NotFoundException();
         }
 
-        employee.Employees = employees;
+        employee.Employees = children;
         await _context.SaveChangesAsync();
     }
 
@@ -340,7 +340,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// </summary>
     public async Task DisconnectSupervisees(
         EmployeeWhereUniqueInput uniqueId,
-        EmployeeWhereUniqueInput[] employeesId
+        EmployeeWhereUniqueInput[] childrenIds
     )
     {
         var parent = await _context
@@ -351,13 +351,13 @@ public abstract class EmployeesServiceBase : IEmployeesService
             throw new NotFoundException();
         }
 
-        var employees = await _context
-            .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
+        var children = await _context
+            .Employees.Where(t => childrenIds.Select(x => x.Id).Contains(t.Id))
             .ToListAsync();
 
-        foreach (var employee in employees)
+        foreach (var child in children)
         {
-            parent.Supervisees?.Remove(employee);
+            parent.Supervisees?.Remove(child);
         }
         await _context.SaveChangesAsync();
     }
@@ -386,27 +386,27 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// </summary>
     public async Task UpdateSupervisees(
         EmployeeWhereUniqueInput uniqueId,
-        EmployeeWhereUniqueInput[] employeesId
+        EmployeeWhereUniqueInput[] childrenIds
     )
     {
         var employee = await _context
-            .Employees.Include(t => t.Employees)
+            .Employees.Include(t => t.Supervisees)
             .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
         if (employee == null)
         {
             throw new NotFoundException();
         }
 
-        var employees = await _context
-            .Employees.Where(a => employeesId.Select(x => x.Id).Contains(a.Id))
+        var children = await _context
+            .Employees.Where(a => childrenIds.Select(x => x.Id).Contains(a.Id))
             .ToListAsync();
 
-        if (employees.Count == 0)
+        if (children.Count == 0)
         {
             throw new NotFoundException();
         }
 
-        employee.Employees = employees;
+        employee.Supervisees = children;
         await _context.SaveChangesAsync();
     }
 

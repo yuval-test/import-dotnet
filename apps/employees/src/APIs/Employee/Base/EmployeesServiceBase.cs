@@ -1,10 +1,10 @@
 using Employees.APIs;
-using Employees.APIs.Common;
+using Employees.Infrastructure;
 using Employees.APIs.Dtos;
+using Employees.Infrastructure.Models;
 using Employees.APIs.Errors;
 using Employees.APIs.Extensions;
-using Employees.Infrastructure;
-using Employees.Infrastructure.Models;
+using Employees.APIs.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Employees.APIs;
@@ -12,7 +12,6 @@ namespace Employees.APIs;
 public abstract class EmployeesServiceBase : IEmployeesService
 {
     protected readonly EmployeesDbContext _context;
-
     public EmployeesServiceBase(EmployeesDbContext context)
     {
         _context = context;
@@ -39,9 +38,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
         if (createDto.Supervisees != null)
         {
             employee.Supervisees = await _context
-                .Employees.Where(employee =>
-                    createDto.Supervisees.Select(t => t.Id).Contains(employee.Id)
-                )
+                .Employees.Where(employee => createDto.Supervisees.Select(t => t.Id).Contains(employee.Id))
                 .ToListAsync();
         }
 
@@ -86,12 +83,13 @@ public abstract class EmployeesServiceBase : IEmployeesService
     public async Task<List<Employee>> Employees(EmployeeFindManyArgs findManyArgs)
     {
         var employees = await _context
-            .Employees.Include(x => x.Supervisees)
-            .ApplyWhere(findManyArgs.Where)
-            .ApplySkip(findManyArgs.Skip)
-            .ApplyTake(findManyArgs.Take)
-            .ApplyOrderBy(findManyArgs.SortBy)
-            .ToListAsync();
+              .Employees
+      .Include(x => x.Supervisees)
+      .ApplyWhere(findManyArgs.Where)
+      .ApplySkip(findManyArgs.Skip)
+      .ApplyTake(findManyArgs.Take)
+      .ApplyOrderBy(findManyArgs.SortBy)
+      .ToListAsync();
         return employees.ConvertAll(employee => employee.ToDto());
     }
 
@@ -100,7 +98,11 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// </summary>
     public async Task<MetadataDto> EmployeesMeta(EmployeeFindManyArgs findManyArgs)
     {
-        var count = await _context.Employees.ApplyWhere(findManyArgs.Where).CountAsync();
+
+        var count = await _context
+    .Employees
+    .ApplyWhere(findManyArgs.Where)
+    .CountAsync();
 
         return new MetadataDto { Count = count };
     }
@@ -111,8 +113,8 @@ public abstract class EmployeesServiceBase : IEmployeesService
     public async Task<Employee> Employee(EmployeeWhereUniqueInput uniqueId)
     {
         var employees = await this.Employees(
-            new EmployeeFindManyArgs { Where = new EmployeeWhereInput { Id = uniqueId.Id } }
-        );
+                  new EmployeeFindManyArgs { Where = new EmployeeWhereInput { Id = uniqueId.Id } }
+      );
         var employee = employees.FirstOrDefault();
         if (employee == null)
         {
@@ -125,19 +127,14 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// <summary>
     /// Update one Employee
     /// </summary>
-    public async Task UpdateEmployee(
-        EmployeeWhereUniqueInput uniqueId,
-        EmployeeUpdateInput updateDto
-    )
+    public async Task UpdateEmployee(EmployeeWhereUniqueInput uniqueId, EmployeeUpdateInput updateDto)
     {
         var employee = updateDto.ToModel(uniqueId);
 
         if (updateDto.Supervisees != null)
         {
             employee.Supervisees = await _context
-                .Employees.Where(employee =>
-                    updateDto.Supervisees.Select(t => t).Contains(employee.Id)
-                )
+                .Employees.Where(employee => updateDto.Supervisees.Select(t => t).Contains(employee.Id))
                 .ToListAsync();
         }
 
@@ -163,22 +160,19 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// <summary>
     /// Connect multiple Supervisees records to Employee
     /// </summary>
-    public async Task ConnectSupervisees(
-        EmployeeWhereUniqueInput uniqueId,
-        EmployeeWhereUniqueInput[] employeesId
-    )
+    public async Task ConnectSupervisees(EmployeeWhereUniqueInput uniqueId, EmployeeWhereUniqueInput[] employeesId)
     {
         var parent = await _context
-            .Employees.Include(x => x.Supervisees)
-            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+              .Employees.Include(x => x.Supervisees)
+      .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
         if (parent == null)
         {
             throw new NotFoundException();
         }
 
         var employees = await _context
-            .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
-            .ToListAsync();
+          .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
+          .ToListAsync();
         if (employees.Count == 0)
         {
             throw new NotFoundException();
@@ -197,22 +191,19 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// <summary>
     /// Disconnect multiple Supervisees records from Employee
     /// </summary>
-    public async Task DisconnectSupervisees(
-        EmployeeWhereUniqueInput uniqueId,
-        EmployeeWhereUniqueInput[] employeesId
-    )
+    public async Task DisconnectSupervisees(EmployeeWhereUniqueInput uniqueId, EmployeeWhereUniqueInput[] employeesId)
     {
         var parent = await _context
-            .Employees.Include(x => x.Supervisees)
-            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+                                .Employees.Include(x => x.Supervisees)
+                        .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
         if (parent == null)
         {
             throw new NotFoundException();
         }
 
         var employees = await _context
-            .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
-            .ToListAsync();
+          .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
+          .ToListAsync();
 
         foreach (var employee in employees)
         {
@@ -224,18 +215,16 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// <summary>
     /// Find multiple Supervisees records for Employee
     /// </summary>
-    public async Task<List<Employee>> FindSupervisees(
-        EmployeeWhereUniqueInput uniqueId,
-        EmployeeFindManyArgs employeeFindManyArgs
-    )
+    public async Task<List<Employee>> FindSupervisees(EmployeeWhereUniqueInput uniqueId, EmployeeFindManyArgs employeeFindManyArgs)
     {
         var employees = await _context
-            .Employees.Where(m => m.SupervisorId == uniqueId.Id)
-            .ApplyWhere(employeeFindManyArgs.Where)
-            .ApplySkip(employeeFindManyArgs.Skip)
-            .ApplyTake(employeeFindManyArgs.Take)
-            .ApplyOrderBy(employeeFindManyArgs.SortBy)
-            .ToListAsync();
+              .Employees
+      .Where(m => m.SupervisorId == uniqueId.Id)
+      .ApplyWhere(employeeFindManyArgs.Where)
+      .ApplySkip(employeeFindManyArgs.Skip)
+      .ApplyTake(employeeFindManyArgs.Take)
+      .ApplyOrderBy(employeeFindManyArgs.SortBy)
+      .ToListAsync();
 
         return employees.Select(x => x.ToDto()).ToList();
     }
@@ -243,22 +232,19 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// <summary>
     /// Update multiple Supervisees records for Employee
     /// </summary>
-    public async Task UpdateSupervisees(
-        EmployeeWhereUniqueInput uniqueId,
-        EmployeeWhereUniqueInput[] employeesId
-    )
+    public async Task UpdateSupervisees(EmployeeWhereUniqueInput uniqueId, EmployeeWhereUniqueInput[] employeesId)
     {
         var employee = await _context
-            .Employees.Include(t => t.Supervisees)
-            .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
+                .Employees.Include(t => t.Supervisees)
+        .FirstOrDefaultAsync(x => x.Id == uniqueId.Id);
         if (employee == null)
         {
             throw new NotFoundException();
         }
 
         var employees = await _context
-            .Employees.Where(a => employeesId.Select(x => x.Id).Contains(a.Id))
-            .ToListAsync();
+          .Employees.Where(a => employeesId.Select(x => x.Id).Contains(a.Id))
+          .ToListAsync();
 
         if (employees.Count == 0)
         {
@@ -275,13 +261,14 @@ public abstract class EmployeesServiceBase : IEmployeesService
     public async Task<Employee> GetSupervisor(EmployeeWhereUniqueInput uniqueId)
     {
         var employee = await _context
-            .Employees.Where(employee => employee.Id == uniqueId.Id)
-            .Include(employee => employee.Supervisor)
-            .FirstOrDefaultAsync();
+              .Employees.Where(employee => employee.Id == uniqueId.Id)
+      .Include(employee => employee.Supervisor)
+      .FirstOrDefaultAsync();
         if (employee == null)
         {
             throw new NotFoundException();
         }
         return employee.Supervisor.ToDto();
     }
+
 }

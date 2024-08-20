@@ -17,13 +17,11 @@ public static class EmployeesExtensions
             Supervisees = model.Supervisees?.Select(x => x.Id).ToList(),
             Supervisor = model.SupervisorId,
             UpdatedAt = model.UpdatedAt,
+
         };
     }
 
-    public static EmployeeDbModel ToModel(
-        this EmployeeUpdateInput updateDto,
-        EmployeeWhereUniqueInput uniqueId
-    )
+    public static EmployeeDbModel ToModel(this EmployeeUpdateInput updateDto, EmployeeWhereUniqueInput uniqueId)
     {
         var employee = new EmployeeDbModel
         {
@@ -48,4 +46,5 @@ public static class EmployeesExtensions
 
         return employee;
     }
+
 }

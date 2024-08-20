@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using Employees.APIs;
+using Employees.APIs.Common;
 using Employees.APIs.Dtos;
 using Employees.APIs.Errors;
-using Employees.APIs.Common;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Employees.APIs;
 
@@ -11,6 +11,7 @@ namespace Employees.APIs;
 public abstract class EmployeesControllerBase : ControllerBase
 {
     protected readonly IEmployeesService _service;
+
     public EmployeesControllerBase(IEmployeesService service)
     {
         _service = service;
@@ -31,8 +32,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// Delete one Employee
     /// </summary>
     [HttpDelete("{Id}")]
-    public async Task<ActionResult> DeleteEmployee([FromRoute()]
-    EmployeeWhereUniqueInput uniqueId)
+    public async Task<ActionResult> DeleteEmployee([FromRoute()] EmployeeWhereUniqueInput uniqueId)
     {
         try
         {
@@ -50,8 +50,9 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// Find many Employees
     /// </summary>
     [HttpGet()]
-    public async Task<ActionResult<List<Employee>>> Employees([FromQuery()]
-    EmployeeFindManyArgs filter)
+    public async Task<ActionResult<List<Employee>>> Employees(
+        [FromQuery()] EmployeeFindManyArgs filter
+    )
     {
         return Ok(await _service.Employees(filter));
     }
@@ -60,8 +61,9 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// Meta data about Employee records
     /// </summary>
     [HttpPost("meta")]
-    public async Task<ActionResult<MetadataDto>> EmployeesMeta([FromQuery()]
-    EmployeeFindManyArgs filter)
+    public async Task<ActionResult<MetadataDto>> EmployeesMeta(
+        [FromQuery()] EmployeeFindManyArgs filter
+    )
     {
         return Ok(await _service.EmployeesMeta(filter));
     }
@@ -70,8 +72,9 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// Get one Employee
     /// </summary>
     [HttpGet("{Id}")]
-    public async Task<ActionResult<Employee>> Employee([FromRoute()]
-    EmployeeWhereUniqueInput uniqueId)
+    public async Task<ActionResult<Employee>> Employee(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId
+    )
     {
         try
         {
@@ -87,9 +90,10 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// Update one Employee
     /// </summary>
     [HttpPatch("{Id}")]
-    public async Task<ActionResult> UpdateEmployee([FromRoute()]
-    EmployeeWhereUniqueInput uniqueId, [FromQuery()]
-    EmployeeUpdateInput employeeUpdateDto)
+    public async Task<ActionResult> UpdateEmployee(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId,
+        [FromQuery()] EmployeeUpdateInput employeeUpdateDto
+    )
     {
         try
         {
@@ -107,9 +111,10 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// Connect multiple Supervisees records to Employee
     /// </summary>
     [HttpPost("{Id}/employees")]
-    public async Task<ActionResult> ConnectSupervisees([FromRoute()]
-    EmployeeWhereUniqueInput uniqueId, [FromQuery()]
-    EmployeeWhereUniqueInput[] employeesId)
+    public async Task<ActionResult> ConnectSupervisees(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId,
+        [FromQuery()] EmployeeWhereUniqueInput[] employeesId
+    )
     {
         try
         {
@@ -127,9 +132,10 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// Disconnect multiple Supervisees records from Employee
     /// </summary>
     [HttpDelete("{Id}/employees")]
-    public async Task<ActionResult> DisconnectSupervisees([FromRoute()]
-    EmployeeWhereUniqueInput uniqueId, [FromBody()]
-    EmployeeWhereUniqueInput[] employeesId)
+    public async Task<ActionResult> DisconnectSupervisees(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId,
+        [FromBody()] EmployeeWhereUniqueInput[] employeesId
+    )
     {
         try
         {
@@ -147,9 +153,10 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// Find multiple Supervisees records for Employee
     /// </summary>
     [HttpGet("{Id}/employees")]
-    public async Task<ActionResult<List<Employee>>> FindSupervisees([FromRoute()]
-    EmployeeWhereUniqueInput uniqueId, [FromQuery()]
-    EmployeeFindManyArgs filter)
+    public async Task<ActionResult<List<Employee>>> FindSupervisees(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId,
+        [FromQuery()] EmployeeFindManyArgs filter
+    )
     {
         try
         {
@@ -165,9 +172,10 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// Update multiple Supervisees records for Employee
     /// </summary>
     [HttpPatch("{Id}/employees")]
-    public async Task<ActionResult> UpdateSupervisees([FromRoute()]
-    EmployeeWhereUniqueInput uniqueId, [FromBody()]
-    EmployeeWhereUniqueInput[] employeesId)
+    public async Task<ActionResult> UpdateSupervisees(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId,
+        [FromBody()] EmployeeWhereUniqueInput[] employeesId
+    )
     {
         try
         {
@@ -185,11 +193,11 @@ public abstract class EmployeesControllerBase : ControllerBase
     /// Get a Supervisor record for Employee
     /// </summary>
     [HttpGet("{Id}/employees")]
-    public async Task<ActionResult<List<Employee>>> GetSupervisor([FromRoute()]
-    EmployeeWhereUniqueInput uniqueId)
+    public async Task<ActionResult<List<Employee>>> GetSupervisor(
+        [FromRoute()] EmployeeWhereUniqueInput uniqueId
+    )
     {
         var employee = await _service.GetSupervisor(uniqueId);
         return Ok(employee);
     }
-
 }

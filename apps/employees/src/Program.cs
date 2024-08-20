@@ -1,7 +1,7 @@
 using System.Reflection;
 using Employees;
-using Microsoft.EntityFrameworkCore;
 using Employees.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,25 +13,23 @@ builder.Services.RegisterServices();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
-    {
-        var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-    });
+{
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
 builder.Services.AddCors(builder =>
-      {
-          builder.AddPolicy(
-              "MyCorsPolicy",
-              policy =>
-              {
-                  policy
-                      .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .WithOrigins(["localhost"])
-                      .AllowCredentials();
-              }
-          );
-      });
-builder.Services.AddDbContext<EmployeesDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    builder.AddPolicy(
+        "MyCorsPolicy",
+        policy =>
+        {
+            policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(["localhost"]).AllowCredentials();
+        }
+    );
+});
+builder.Services.AddDbContext<EmployeesDbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 var app = builder.Build();
 
 app.UseCors();

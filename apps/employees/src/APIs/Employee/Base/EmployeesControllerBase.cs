@@ -212,7 +212,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     {
         try
         {
-            await _service.ConnectEmployees(uniqueId, employeesId);
+            await _service.ConnectSupervisees(uniqueId, employeesId);
         }
         catch (NotFoundException)
         {
@@ -233,7 +233,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     {
         try
         {
-            await _service.DisconnectEmployees(uniqueId, employeesId);
+            await _service.DisconnectSupervisees(uniqueId, employeesId);
         }
         catch (NotFoundException)
         {
@@ -254,7 +254,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     {
         try
         {
-            return Ok(await _service.FindEmployees(uniqueId, filter));
+            return Ok(await _service.FindSupervisees(uniqueId, filter));
         }
         catch (NotFoundException)
         {
@@ -273,7 +273,7 @@ public abstract class EmployeesControllerBase : ControllerBase
     {
         try
         {
-            await _service.UpdateEmployees(uniqueId, employeesId);
+            await _service.UpdateSupervisees(uniqueId, employeesId);
         }
         catch (NotFoundException)
         {

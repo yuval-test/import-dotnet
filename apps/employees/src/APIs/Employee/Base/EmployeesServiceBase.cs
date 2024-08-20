@@ -181,7 +181,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// </summary>
     public async Task ConnectEmployees(
         EmployeeWhereUniqueInput uniqueId,
-        EmployeeWhereUniqueInput[] employeesId
+        EmployeeWhereUniqueInput[] childrenIds
     )
     {
         var parent = await _context
@@ -192,19 +192,19 @@ public abstract class EmployeesServiceBase : IEmployeesService
             throw new NotFoundException();
         }
 
-        var employees = await _context
-            .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
+        var children = await _context
+            .Employees.Where(t => childrenIds.Select(x => x.Id).Contains(t.Id))
             .ToListAsync();
-        if (employees.Count == 0)
+        if (children.Count == 0)
         {
             throw new NotFoundException();
         }
 
-        var employeesToConnect = employees.Except(parent.Employees);
+        var childrenToConnect = children.Except(parent.Employees);
 
-        foreach (var employee in employeesToConnect)
+        foreach (var child in childrenToConnect)
         {
-            parent.Employees.Add(employee);
+            parent.Employees.Add(child);
         }
 
         await _context.SaveChangesAsync();
@@ -306,7 +306,7 @@ public abstract class EmployeesServiceBase : IEmployeesService
     /// </summary>
     public async Task ConnectSupervisees(
         EmployeeWhereUniqueInput uniqueId,
-        EmployeeWhereUniqueInput[] employeesId
+        EmployeeWhereUniqueInput[] childrenIds
     )
     {
         var parent = await _context
@@ -317,19 +317,19 @@ public abstract class EmployeesServiceBase : IEmployeesService
             throw new NotFoundException();
         }
 
-        var employees = await _context
-            .Employees.Where(t => employeesId.Select(x => x.Id).Contains(t.Id))
+        var children = await _context
+            .Employees.Where(t => childrenIds.Select(x => x.Id).Contains(t.Id))
             .ToListAsync();
-        if (employees.Count == 0)
+        if (children.Count == 0)
         {
             throw new NotFoundException();
         }
 
-        var employeesToConnect = employees.Except(parent.Supervisees);
+        var childrenToConnect = children.Except(parent.Supervisees);
 
-        foreach (var employee in employeesToConnect)
+        foreach (var child in childrenToConnect)
         {
-            parent.Supervisees.Add(employee);
+            parent.Supervisees.Add(child);
         }
 
         await _context.SaveChangesAsync();

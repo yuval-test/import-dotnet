@@ -9,6 +9,4 @@ public class EmployeesDbContext : DbContext
         : base(options) { }
 
     public DbSet<EmployeeDbModel> Employees { get; set; }
-
-    public DbSet<GroupDbModel> Groups { get; set; }
 }
